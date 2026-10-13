@@ -1,0 +1,77 @@
+<top abs_name="top" size="50" coverage="50" cover_percentage="100.0">
+  <cvr_gp size="50" coverage="50" cover_percentage="100.0" abs_name="top.cvr_gp">
+    <Reset_Coverage size="2" coverage="2" cover_percentage="100.0" abs_name="top.cvr_gp.Reset_Coverage" weight="1" at_least="1">
+      <bin0 bin="reset" hits="1502" abs_name="top.cvr_gp.Reset_Coverage.bin0" />
+      <bin1 bin="no_reset" hits="176674" abs_name="top.cvr_gp.Reset_Coverage.bin1" />
+    </Reset_Coverage>
+    <P_DATA_Coverage size="10" coverage="10" cover_percentage="100.0" abs_name="top.cvr_gp.P_DATA_Coverage" weight="1" at_least="1">
+      <bin0 bin="min_value" hits="86" abs_name="top.cvr_gp.P_DATA_Coverage.bin0" />
+      <bin1 bin="max_value" hits="112" abs_name="top.cvr_gp.P_DATA_Coverage.bin1" />
+      <bin2 bin="alt_pattern" hits="240" abs_name="top.cvr_gp.P_DATA_Coverage.bin2" />
+      <bin3 bin="value_32" hits="841" abs_name="top.cvr_gp.P_DATA_Coverage.bin3" />
+      <bin4 bin="value_64" hits="847" abs_name="top.cvr_gp.P_DATA_Coverage.bin4" />
+      <bin5 bin="value_96" hits="789" abs_name="top.cvr_gp.P_DATA_Coverage.bin5" />
+      <bin6 bin="value_128" hits="786" abs_name="top.cvr_gp.P_DATA_Coverage.bin6" />
+      <bin7 bin="value_160" hits="742" abs_name="top.cvr_gp.P_DATA_Coverage.bin7" />
+      <bin8 bin="value_192" hits="644" abs_name="top.cvr_gp.P_DATA_Coverage.bin8" />
+      <bin9 bin="value_224" hits="516" abs_name="top.cvr_gp.P_DATA_Coverage.bin9" />
+    </P_DATA_Coverage>
+    <PAR_EN_Coverage size="2" coverage="2" cover_percentage="100.0" abs_name="top.cvr_gp.PAR_EN_Coverage" weight="1" at_least="1">
+      <bin0 bin="parity_disabled" hits="130870" abs_name="top.cvr_gp.PAR_EN_Coverage.bin0" />
+      <bin1 bin="parity_enabled" hits="47306" abs_name="top.cvr_gp.PAR_EN_Coverage.bin1" />
+    </PAR_EN_Coverage>
+    <PAR_TYP_Coverage size="2" coverage="2" cover_percentage="100.0" abs_name="top.cvr_gp.PAR_TYP_Coverage" weight="1" at_least="1">
+      <bin0 bin="even_parity" hits="89210" abs_name="top.cvr_gp.PAR_TYP_Coverage.bin0" />
+      <bin1 bin="odd_parity" hits="88966" abs_name="top.cvr_gp.PAR_TYP_Coverage.bin1" />
+    </PAR_TYP_Coverage>
+    <DATA_VALID_Coverage size="2" coverage="2" cover_percentage="100.0" abs_name="top.cvr_gp.DATA_VALID_Coverage" weight="1" at_least="1">
+      <bin0 bin="data_invalid" hits="163700" abs_name="top.cvr_gp.DATA_VALID_Coverage.bin0" />
+      <bin1 bin="data_valid" hits="14476" abs_name="top.cvr_gp.DATA_VALID_Coverage.bin1" />
+    </DATA_VALID_Coverage>
+    <Busy_Coverage size="2" coverage="2" cover_percentage="100.0" abs_name="top.cvr_gp.Busy_Coverage" weight="1" at_least="1">
+      <bin0 bin="busy_0" hits="43714" abs_name="top.cvr_gp.Busy_Coverage.bin0" />
+      <bin1 bin="busy_1" hits="134462" abs_name="top.cvr_gp.Busy_Coverage.bin1" />
+    </Busy_Coverage>
+    <TX_OUT_Coverage size="2" coverage="2" cover_percentage="100.0" abs_name="top.cvr_gp.TX_OUT_Coverage" weight="1" at_least="1">
+      <bin0 bin="tx_out_0" hits="67587" abs_name="top.cvr_gp.TX_OUT_Coverage.bin0" />
+      <bin1 bin="tx_out_1" hits="110589" abs_name="top.cvr_gp.TX_OUT_Coverage.bin1" />
+    </TX_OUT_Coverage>
+    <PAR_EN__PAR_TYP_CROSS size="4" coverage="4" cover_percentage="100.0" abs_name="top.cvr_gp.PAR_EN__PAR_TYP_CROSS" weight="1" at_least="1">
+      <bin0 bin="('parity_disabled', 'even_parity')" hits="65700" abs_name="top.cvr_gp.PAR_EN__PAR_TYP_CROSS.bin0" />
+      <bin1 bin="('parity_disabled', 'odd_parity')" hits="65170" abs_name="top.cvr_gp.PAR_EN__PAR_TYP_CROSS.bin1" />
+      <bin2 bin="('parity_enabled', 'even_parity')" hits="23510" abs_name="top.cvr_gp.PAR_EN__PAR_TYP_CROSS.bin2" />
+      <bin3 bin="('parity_enabled', 'odd_parity')" hits="23796" abs_name="top.cvr_gp.PAR_EN__PAR_TYP_CROSS.bin3" />
+    </PAR_EN__PAR_TYP_CROSS>
+    <P_DATA__DATA_VALID_CROSS size="20" coverage="20" cover_percentage="100.0" abs_name="top.cvr_gp.P_DATA__DATA_VALID_CROSS" weight="1" at_least="1">
+      <bin0 bin="('min_value', 'data_invalid')" hits="78" abs_name="top.cvr_gp.P_DATA__DATA_VALID_CROSS.bin0" />
+      <bin1 bin="('min_value', 'data_valid')" hits="8" abs_name="top.cvr_gp.P_DATA__DATA_VALID_CROSS.bin1" />
+      <bin2 bin="('max_value', 'data_invalid')" hits="104" abs_name="top.cvr_gp.P_DATA__DATA_VALID_CROSS.bin2" />
+      <bin3 bin="('max_value', 'data_valid')" hits="8" abs_name="top.cvr_gp.P_DATA__DATA_VALID_CROSS.bin3" />
+      <bin4 bin="('alt_pattern', 'data_invalid')" hits="222" abs_name="top.cvr_gp.P_DATA__DATA_VALID_CROSS.bin4" />
+      <bin5 bin="('alt_pattern', 'data_valid')" hits="18" abs_name="top.cvr_gp.P_DATA__DATA_VALID_CROSS.bin5" />
+      <bin6 bin="('value_32', 'data_invalid')" hits="771" abs_name="top.cvr_gp.P_DATA__DATA_VALID_CROSS.bin6" />
+      <bin7 bin="('value_32', 'data_valid')" hits="70" abs_name="top.cvr_gp.P_DATA__DATA_VALID_CROSS.bin7" />
+      <bin8 bin="('value_64', 'data_invalid')" hits="780" abs_name="top.cvr_gp.P_DATA__DATA_VALID_CROSS.bin8" />
+      <bin9 bin="('value_64', 'data_valid')" hits="67" abs_name="top.cvr_gp.P_DATA__DATA_VALID_CROSS.bin9" />
+      <bin10 bin="('value_96', 'data_invalid')" hits="721" abs_name="top.cvr_gp.P_DATA__DATA_VALID_CROSS.bin10" />
+      <bin11 bin="('value_96', 'data_valid')" hits="68" abs_name="top.cvr_gp.P_DATA__DATA_VALID_CROSS.bin11" />
+      <bin12 bin="('value_128', 'data_invalid')" hits="724" abs_name="top.cvr_gp.P_DATA__DATA_VALID_CROSS.bin12" />
+      <bin13 bin="('value_128', 'data_valid')" hits="62" abs_name="top.cvr_gp.P_DATA__DATA_VALID_CROSS.bin13" />
+      <bin14 bin="('value_160', 'data_invalid')" hits="678" abs_name="top.cvr_gp.P_DATA__DATA_VALID_CROSS.bin14" />
+      <bin15 bin="('value_160', 'data_valid')" hits="64" abs_name="top.cvr_gp.P_DATA__DATA_VALID_CROSS.bin15" />
+      <bin16 bin="('value_192', 'data_invalid')" hits="595" abs_name="top.cvr_gp.P_DATA__DATA_VALID_CROSS.bin16" />
+      <bin17 bin="('value_192', 'data_valid')" hits="49" abs_name="top.cvr_gp.P_DATA__DATA_VALID_CROSS.bin17" />
+      <bin18 bin="('value_224', 'data_invalid')" hits="474" abs_name="top.cvr_gp.P_DATA__DATA_VALID_CROSS.bin18" />
+      <bin19 bin="('value_224', 'data_valid')" hits="42" abs_name="top.cvr_gp.P_DATA__DATA_VALID_CROSS.bin19" />
+    </P_DATA__DATA_VALID_CROSS>
+    <TX_OUT__Busy_CROSS size="3" coverage="3" cover_percentage="100.0" abs_name="top.cvr_gp.TX_OUT__Busy_CROSS" weight="1" at_least="1">
+      <bin0 bin="('tx_out_0', 'busy_1')" hits="67587" abs_name="top.cvr_gp.TX_OUT__Busy_CROSS.bin0" />
+      <bin1 bin="('tx_out_1', 'busy_0')" hits="43714" abs_name="top.cvr_gp.TX_OUT__Busy_CROSS.bin1" />
+      <bin2 bin="('tx_out_1', 'busy_1')" hits="66875" abs_name="top.cvr_gp.TX_OUT__Busy_CROSS.bin2" />
+    </TX_OUT__Busy_CROSS>
+    <illegal_TX_OUT_Busy_Check size="1" coverage="1" cover_percentage="100.0" abs_name="top.cvr_gp.illegal_TX_OUT_Busy_Check" weight="1" at_least="1">
+      <bin0 bin="PASS" hits="178176" abs_name="top.cvr_gp.illegal_TX_OUT_Busy_Check.bin0" />
+      <bin1 bin="FAIL" hits="0" abs_name="top.cvr_gp.illegal_TX_OUT_Busy_Check.bin1" />
+    </illegal_TX_OUT_Busy_Check>
+  </cvr_gp>
+</top>

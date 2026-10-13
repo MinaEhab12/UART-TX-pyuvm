@@ -1,0 +1,920 @@
+Coverage Report by file with details
+
+=================================================================================
+=== File: Design_files/FSM.sv
+=================================================================================
+Statement Coverage:
+    Enabled Coverage            Active      Hits    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    Stmts                           31        31         0     100.0
+
+================================Statement Details================================
+
+Statement Coverage for file Design_files/FSM.sv --
+
+    1                                                module FSM (
+    2                                                	input wire CLK,
+    3                                                	input wire RST,
+    4                                                	input wire Data_Valid,
+    5                                                	input wire PAR_EN,
+    6                                                	input wire Ser_Done,
+    7                                                	output reg Ser_En,
+    8                                                	output reg [1:0] MUX_Sel,
+    9                                                	output reg Busy
+    10                                               );
+    11                                               
+    12                                               localparam [1:0] START_Mux  = 2'b00,
+    13                                               				 DATA_Mux   = 2'b01,
+    14                                               				 PARITY_Mux = 2'b11,
+    15                                               				 STOP_Mux   = 2'b10;
+    16                                               
+    17                                               typedef enum bit [2:0] {
+    18                                               		IDLE   = 3'b000,
+    19                                               		START  = 3'b001,
+    20                                               		DATA   = 3'b011,
+    21                                               		PARITY = 3'b010,
+    22                                               		STOP   = 3'b110
+    23                                               } state;
+    24                                               			
+    25                                               
+    26                                               state current_state,next_state;
+    27                                               
+    28                                               reg busy_comb;
+    29                                               
+    30              1                      82679     always @(posedge CLK or negedge RST) begin
+    31                                               	if(~RST) begin
+    32              1                       1142     		current_state <= IDLE;
+    33              1                       1142     		Busy <= 1'b0;
+    34                                               	end 
+    35                                               	else begin
+    36              1                      81537     		current_state <= next_state;
+    37              1                      81537     		Busy <= busy_comb;
+    38                                               	end
+    39                                               end
+    40                                               
+    41              1                      95485     always @(*) begin
+    42              1                      95485     	Ser_En = 1'b0;
+    43              1                      95485     	MUX_Sel = STOP_Mux;
+    44              1                      95485     	busy_comb = 1'b0;
+    45                                               	case (current_state)
+    46                                               		IDLE     : begin
+    47                                               					if (Data_Valid) begin
+    48              1                      13359     						next_state = START;
+    49              1                      13359     						MUX_Sel = START_Mux;
+    50              1                      13359     						busy_comb = 1'b1;
+    51                                               					end
+    52                                               					else begin
+    53              1                      26737     						next_state = IDLE;
+    54                                               					end
+    55                                               			       end
+    56                                               
+    57                                               		START    : begin
+    58              1                      13047     					next_state = DATA;
+    59              1                      13047     					Ser_En = 1'b1;
+    60              1                      13047     					MUX_Sel = DATA_Mux;
+    61              1                      13047     					busy_comb = 1'b1;
+    62                                               			       end
+    63                                               
+    64                                               		DATA     : begin
+    65                                               					if (Ser_Done && PAR_EN) begin
+    66              1                       3202     						next_state = PARITY;
+    67              1                       3202     						MUX_Sel = PARITY_Mux;
+    68              1                       3202     						busy_comb = 1'b1;
+    69                                               					end
+    70                                               					else if (Ser_Done && ~PAR_EN) begin
+    71              1                       9845     						next_state = STOP;
+    72              1                       9845     						MUX_Sel = STOP_Mux;
+    73              1                       9845     						busy_comb = 1'b1;
+    74                                               					end
+    75                                               					else begin
+    76              1                      13047     						next_state = DATA;
+    77              1                      13047     						Ser_En = 1'b1;
+    78              1                      13047     						MUX_Sel = DATA_Mux;
+    79              1                      13047     						busy_comb = 1'b1;
+    80                                               					end
+    81                                               			      end
+    82                                               
+    83                                               		PARITY  : begin
+    84              1                       3202     					next_state = STOP;
+    85              1                       3202     					MUX_Sel = STOP_Mux;
+    86              1                       3202     					busy_comb = 1'b1;
+    87                                               			      end
+    88                                               
+    89                                               		STOP    : begin
+    90              1                      13046     					next_state = IDLE;
+    91                                               			      end
+    92                                               			      
+    93                                               		default : begin
+    94              1                          E     					next_state = IDLE;
+    95                                               			   	  end
+    96                                               	endcase
+    97                                               end
+    98                                               
+    99                                               
+    100                                              property illegal_transitions_p;
+    101                                                @(posedge CLK) disable iff (!RST)
+    102                                                1 |-> (
+    103                                                  ($past(current_state) == IDLE)   -> !(current_state inside {DATA, PARITY, STOP}) &&
+    104                                                  ($past(current_state) == START)  -> !(current_state inside {IDLE, PARITY, STOP}) &&
+    105                                                  ($past(current_state) == DATA)   -> !(current_state inside {IDLE, START})        &&
+    106                                                  ($past(current_state) == PARITY) -> !(current_state inside {IDLE, START, DATA})  &&
+    107                                                  ($past(current_state) == STOP)   -> !(current_state inside {START, DATA, PARITY})
+    108                                                );
+    109                                              endproperty
+    110                                              
+    111                                              illegal_transitions_a: assert property (illegal_transitions_p) else $error("Illegal Transitions Violation detected!");
+    112                                              illegal_transitions_c: cover property (illegal_transitions_p);
+    113                                              
+    114                                              endmodule
+
+Branch Coverage:
+    Enabled Coverage            Active      Hits    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    Branches                        12        12         0     100.0
+
+================================Branch Details================================
+
+Branch Coverage for file Design_files/FSM.sv --
+
+------------------------------------IF Branch------------------------------------
+    31                                     82679     Count coming in to IF
+    31              1                       1142     	if(~RST) begin
+    35              1                      81537     	else begin
+Branch totals: 2 hits of 2 branches = 100.0%
+
+------------------------------------CASE Branch------------------------------------
+    45                                     95485     Count coming in to CASE
+    46              1                      40096     		IDLE     : begin
+    57              1                      13047     		START    : begin
+    64              1                      26094     		DATA     : begin
+    83              1                       3202     		PARITY  : begin
+    89              1                      13046     		STOP    : begin
+    93              1                          E     		default : begin
+Branch totals: 5 hits of 5 branches = 100.0%
+
+------------------------------------IF Branch------------------------------------
+    47                                     40096     Count coming in to IF
+    47              1                      13359     					if (Data_Valid) begin
+    52              1                      26737     					else begin
+Branch totals: 2 hits of 2 branches = 100.0%
+
+------------------------------------IF Branch------------------------------------
+    65                                     26094     Count coming in to IF
+    65              1                       3202     					if (Ser_Done && PAR_EN) begin
+    70              1                       9845     					else if (Ser_Done && ~PAR_EN) begin
+    75              1                      13047     					else begin
+Branch totals: 3 hits of 3 branches = 100.0%
+
+
+Condition Coverage:
+    Enabled Coverage            Active   Covered    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    FEC Condition Terms              0         0         0     100.0
+Expression Coverage:
+    Enabled Coverage            Active   Covered    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    FEC Expression Terms             0         0         0     100.0
+FSM Coverage:
+    Enabled Coverage            Active      Hits    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    FSMs                                                       100.0
+        States                       5         5         0     100.0
+        Transitions                  6         6         0     100.0
+
+================================FSM Details================================
+
+FSM Coverage for file Design_files/FSM.sv --
+
+FSM_ID: current_state
+    Current State Object : current_state
+    ----------------------
+    State Value MapInfo :
+    ---------------------
+Line          State Name               Value
+----          ----------               -----
+  46                IDLE                   0
+  57               START                   1
+  64                DATA                   3
+  89                STOP                   6
+  83              PARITY                   2
+    Covered States :
+    ----------------
+                   State           Hit_count
+                   -----           ---------
+                    IDLE               27289
+                   START               13047
+                    DATA               26094
+                    STOP               13046
+                  PARITY                3202
+    Covered Transitions :
+    ---------------------
+Line            Trans_ID           Hit_count          Transition          
+----            --------           ---------          ----------          
+  48                   0               13047          IDLE -> START       
+  58                   1               13047          START -> DATA       
+  71                   3                9844          DATA -> STOP        
+  66                   4                3202          DATA -> PARITY      
+  90                   6               13046          STOP -> IDLE        
+  84                   7                3202          PARITY -> STOP      
+
+
+    Summary                     Active      Hits    Misses % Covered
+    -------                     ------      ----    ------ ---------
+        States                       5         5         0     100.0
+        Transitions                  6         6         0     100.0
+Toggle Coverage:
+    Enabled Coverage            Active      Hits    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    Toggle Bins                     21        21         0     100.0
+
+================================Toggle Details================================
+
+Toggle Coverage for File Design_files/FSM.sv --
+
+       Line                                   Node      1H->0L      0L->1H                          "Coverage"
+--------------------------------------------------------------------------------------------------------------
+          6                               Ser_Done           1           1                              100.00 
+          7                                 Ser_En           1           1                              100.00 
+          8                             MUX_Sel[1]           1           1                              100.00 
+          8                             MUX_Sel[0]           1           1                              100.00 
+          9                                   Busy           1           1                              100.00 
+         26                             next_state               ENUM type       Value       Count 
+                                                                      IDLE       26163      100.00 
+                                                                     START       13117      100.00 
+                                                                    PARITY        3202      100.00 
+                                                                      STOP       13047      100.00 
+         26                          current_state               ENUM type       Value       Count 
+                                                                      IDLE           1      100.00 
+                                                                     START           2      100.00 
+                                                                      DATA           2      100.00 
+                                                                    PARITY           1      100.00 
+                                                                      STOP           1      100.00 
+         28                              busy_comb           1           1                              100.00 
+
+Total Node Count     =         15 
+Toggled Node Count   =         15 
+Untoggled Node Count =          0 
+
+Toggle Coverage      =      100.0% (21 of 21 bins)
+
+=================================================================================
+=== File: Design_files/MUX.v
+=================================================================================
+Statement Coverage:
+    Enabled Coverage            Active      Hits    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    Stmts                            6         6         0     100.0
+
+================================Statement Details================================
+
+Statement Coverage for file Design_files/MUX.v --
+
+    1                                                module MUX (
+    2                                                	input wire CLK,
+    3                                                	input wire RST,
+    4                                                	input wire [1:0] MUX_Sel,
+    5                                                	input wire Start_Bit,
+    6                                                	input wire Ser_Data,
+    7                                                	input wire Par_Bit,
+    8                                                	input wire Stop_Bit,
+    9                                                	output reg TX_OUT
+    10                                               );
+    11                                               
+    12              1                     121103     always @(posedge CLK or negedge RST) begin
+    13                                               	if (~RST) begin
+    14              1                       1072     		TX_OUT <= 1'b1;
+    15                                               	end
+    16                                               	else begin
+    17                                               		case (MUX_Sel)
+    18              1                      13047     			2'b00 : TX_OUT <= Start_Bit;
+    19              1                      83460     			2'b01 : TX_OUT <= Ser_Data;
+    20              1                       3202     			2'b11 : TX_OUT <= Par_Bit;
+    21              1                      20321     			2'b10 : TX_OUT <= Stop_Bit;
+    22                                               		endcase
+    23                                               	end
+    24                                               end
+    25                                               
+    26                                               endmodule
+
+Branch Coverage:
+    Enabled Coverage            Active      Hits    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    Branches                         7         7         0     100.0
+
+================================Branch Details================================
+
+Branch Coverage for file Design_files/MUX.v --
+
+------------------------------------IF Branch------------------------------------
+    13                                    121103     Count coming in to IF
+    13              1                       1072     	if (~RST) begin
+    16              1                     120031     	else begin
+Branch totals: 2 hits of 2 branches = 100.0%
+
+------------------------------------CASE Branch------------------------------------
+    17                                    120031     Count coming in to CASE
+    18              1                      13047     			2'b00 : TX_OUT <= Start_Bit;
+    19              1                      83460     			2'b01 : TX_OUT <= Ser_Data;
+    20              1                       3202     			2'b11 : TX_OUT <= Par_Bit;
+    21              1                      20321     			2'b10 : TX_OUT <= Stop_Bit;
+                                               1     All False Count
+Branch totals: 5 hits of 5 branches = 100.0%
+
+
+Condition Coverage:
+    Enabled Coverage            Active   Covered    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    FEC Condition Terms              0         0         0     100.0
+Expression Coverage:
+    Enabled Coverage            Active   Covered    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    FEC Expression Terms             0         0         0     100.0
+FSM Coverage:
+    Enabled Coverage            Active      Hits    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    FSMs                                                       100.0
+        States                       0         0         0     100.0
+        Transitions                  0         0         0     100.0
+Toggle Coverage:
+    Enabled Coverage            Active      Hits    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    Toggle Bins                     10        10         0     100.0
+
+================================Toggle Details================================
+
+Toggle Coverage for File Design_files/MUX.v --
+
+       Line                                   Node      1H->0L      0L->1H                          "Coverage"
+--------------------------------------------------------------------------------------------------------------
+          4                             MUX_Sel[1]           1           1                              100.00 
+          4                             MUX_Sel[0]           1           1                              100.00 
+          6                               Ser_Data           1           1                              100.00 
+          7                                Par_Bit           1           1                              100.00 
+          9                                 TX_OUT           1           1                              100.00 
+
+Total Node Count     =          5 
+Toggled Node Count   =          5 
+Untoggled Node Count =          0 
+
+Toggle Coverage      =      100.0% (10 of 10 bins)
+
+=================================================================================
+=== File: Design_files/Parity_Calc.v
+=================================================================================
+Statement Coverage:
+    Enabled Coverage            Active      Hits    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    Stmts                            6         6         0     100.0
+
+================================Statement Details================================
+
+Statement Coverage for file Design_files/Parity_Calc.v --
+
+    1                                                module Parity_Calc # (parameter Data_Width = 8)
+    2                                                (
+    3                                                	input wire CLK,
+    4                                                	input wire RST,
+    5                                                	input wire [Data_Width-1:0] P_DATA,
+    6                                                	input wire Busy,
+    7                                                	input wire PAR_TYP,
+    8                                                	input wire Data_Valid,
+    9                                                	output reg Par_Bit
+    10                                               );
+    11                                               
+    12                                               reg [Data_Width-1:0] Hold_data;				// Register to hold data
+    13                                               
+    14              1                      49144     always @(posedge CLK or negedge RST) begin
+    15                                               	if (~RST) begin
+    16              1                       1252     		Par_Bit <= 1'b0;
+    17              1                       1252     		Hold_data <= 'b0;
+    18                                               	end
+    19                                               	else if (Data_Valid && ~Busy) begin
+    20              1                      13047     		Hold_data <= P_DATA;
+    21                                               	end
+    22                                               	else if (PAR_TYP) begin
+    23              1                      17295     		Par_Bit <= ^Hold_data;				// Even parity bit
+    24                                               	end
+    25                                               	else if (~PAR_TYP) begin
+    26              1                      17549     		Par_Bit <= ~^Hold_data;				// Odd parity bit
+    27                                               	end
+    28                                               end
+    29                                               
+    30                                               
+    31                                               endmodule
+
+Branch Coverage:
+    Enabled Coverage            Active      Hits    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    Branches                         5         5         0     100.0
+
+================================Branch Details================================
+
+Branch Coverage for file Design_files/Parity_Calc.v --
+
+------------------------------------IF Branch------------------------------------
+    15                                     49144     Count coming in to IF
+    15              1                       1252     	if (~RST) begin
+    19              1                      13047     	else if (Data_Valid && ~Busy) begin
+    22              1                      17295     	else if (PAR_TYP) begin
+    25              1                      17549     	else if (~PAR_TYP) begin
+                                               1     All False Count
+Branch totals: 5 hits of 5 branches = 100.0%
+
+
+Condition Coverage:
+    Enabled Coverage            Active   Covered    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    FEC Condition Terms              0         0         0     100.0
+Expression Coverage:
+    Enabled Coverage            Active   Covered    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    FEC Expression Terms             0         0         0     100.0
+FSM Coverage:
+    Enabled Coverage            Active      Hits    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    FSMs                                                       100.0
+        States                       0         0         0     100.0
+        Transitions                  0         0         0     100.0
+Toggle Coverage:
+    Enabled Coverage            Active      Hits    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    Toggle Bins                     18        18         0     100.0
+
+================================Toggle Details================================
+
+Toggle Coverage for File Design_files/Parity_Calc.v --
+
+       Line                                   Node      1H->0L      0L->1H                          "Coverage"
+--------------------------------------------------------------------------------------------------------------
+          9                                Par_Bit           1           1                              100.00 
+         12                           Hold_data[7]           1           1                              100.00 
+         12                           Hold_data[6]           1           1                              100.00 
+         12                           Hold_data[5]           1           1                              100.00 
+         12                           Hold_data[4]           1           1                              100.00 
+         12                           Hold_data[3]           1           1                              100.00 
+         12                           Hold_data[2]           1           1                              100.00 
+         12                           Hold_data[1]           1           1                              100.00 
+         12                           Hold_data[0]           1           1                              100.00 
+
+Total Node Count     =          9 
+Toggled Node Count   =          9 
+Untoggled Node Count =          0 
+
+Toggle Coverage      =      100.0% (18 of 18 bins)
+
+=================================================================================
+=== File: Design_files/Serializer.v
+=================================================================================
+Statement Coverage:
+    Enabled Coverage            Active      Hits    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    Stmts                           13        13         0     100.0
+
+================================Statement Details================================
+
+Statement Coverage for file Design_files/Serializer.v --
+
+    1                                                module Serializer # (parameter Data_Width = 8)
+    2                                                (
+    3                                                	input wire CLK,
+    4                                                	input wire RST,
+    5                                                	input wire [Data_Width-1:0] P_DATA,
+    6                                                	input wire Data_Valid,
+    7                                                	input wire Ser_En,
+    8                                                	input wire Busy,
+    9                                                	output wire Ser_Data,
+    10                                               	output reg Ser_Done
+    11                                               );
+    12                                               
+    13                                               reg [Data_Width-1:0] Registered_Data;	// Register to hold data
+    14                                               reg [2:0] counter;
+    15                                               
+    16              1                     159333     always @(posedge CLK or negedge RST) begin
+    17                                               	if (~RST) begin
+    18              1                       1251     		Ser_Done <= 1'b0;
+    19              1                       1251     		Registered_Data <= 'b0;
+    20              1                       1251     		counter <= 'b0;
+    21                                               	end
+    22                                               	else if (Data_Valid && ~Busy) begin
+    23              1                      13047     		Ser_Done <= 1'b0;
+    24              1                      13047     		Registered_Data <= P_DATA;
+    25              1                      13047     		counter <= 'b0;
+    26                                               	end
+    27                                               	else if (Ser_En && ~Ser_Done) begin
+    28              1                     104376     		Registered_Data <= Registered_Data >> 1;
+    29                                               
+    30              1                     104376     		counter <= counter + 1;
+    31              1                     104376     		Ser_Done <= (counter == 3'b111);
+    32                                               	end
+    33                                               	else begin
+    34              1                      40659     		Ser_Done <= 1'b0;
+    35              1                      40659     		Registered_Data <= 'b0;
+    36              1                      40659     		counter <= 'b0;
+    37                                               	end
+    38                                               end
+    39                                               
+    40                                               assign Ser_Data = Registered_Data[0];
+    41                                               
+    42                                               endmodule
+
+Branch Coverage:
+    Enabled Coverage            Active      Hits    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    Branches                         4         4         0     100.0
+
+================================Branch Details================================
+
+Branch Coverage for file Design_files/Serializer.v --
+
+------------------------------------IF Branch------------------------------------
+    17                                    159333     Count coming in to IF
+    17              1                       1251     	if (~RST) begin
+    22              1                      13047     	else if (Data_Valid && ~Busy) begin
+    27              1                     104376     	else if (Ser_En && ~Ser_Done) begin
+    33              1                      40659     	else begin
+Branch totals: 4 hits of 4 branches = 100.0%
+
+
+Condition Coverage:
+    Enabled Coverage            Active   Covered    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    FEC Condition Terms              0         0         0     100.0
+Expression Coverage:
+    Enabled Coverage            Active   Covered    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    FEC Expression Terms             0         0         0     100.0
+FSM Coverage:
+    Enabled Coverage            Active      Hits    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    FSMs                                                       100.0
+        States                       0         0         0     100.0
+        Transitions                  0         0         0     100.0
+Toggle Coverage:
+    Enabled Coverage            Active      Hits    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    Toggle Bins                     28        28         0     100.0
+
+================================Toggle Details================================
+
+Toggle Coverage for File Design_files/Serializer.v --
+
+       Line                                   Node      1H->0L      0L->1H                          "Coverage"
+--------------------------------------------------------------------------------------------------------------
+          7                                 Ser_En           1           1                              100.00 
+          9                               Ser_Data           1           1                              100.00 
+         10                               Ser_Done           1           1                              100.00 
+         13                     Registered_Data[7]           1           1                              100.00 
+         13                     Registered_Data[6]           1           1                              100.00 
+         13                     Registered_Data[5]           1           1                              100.00 
+         13                     Registered_Data[4]           1           1                              100.00 
+         13                     Registered_Data[3]           1           1                              100.00 
+         13                     Registered_Data[2]           1           1                              100.00 
+         13                     Registered_Data[1]           1           1                              100.00 
+         13                     Registered_Data[0]           1           1                              100.00 
+         14                             counter[2]           1           1                              100.00 
+         14                             counter[1]           1           1                              100.00 
+         14                             counter[0]           1           1                              100.00 
+
+Total Node Count     =         14 
+Toggled Node Count   =         14 
+Untoggled Node Count =          0 
+
+Toggle Coverage      =      100.0% (28 of 28 bins)
+
+=================================================================================
+=== File: Design_files/UART_TX.v
+=================================================================================
+Statement Coverage:
+    Enabled Coverage            Active      Hits    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    Stmts                            2         2         0     100.0
+
+================================Statement Details================================
+
+Statement Coverage for file Design_files/UART_TX.v --
+
+    1                                                module UART_TX # (parameter Data_Width = 8)
+    2                                                (
+    3                                                	input wire clk,
+    4                                                	input wire reset,
+    5                                                	input wire [Data_Width-1:0] P_DATA,
+    6                                                	input wire DATA_VALID,
+    7                                                	input wire PAR_EN,
+    8                                                	input wire PAR_TYP,
+    9                                                	output wire TX_OUT,
+    10                                               	output wire Busy
+    11                                               );
+    12                                               
+    13                                               // Internal connections
+    14                                               wire ser_done,ser_en,ser_data,par_bit;
+    15                                               wire [1:0] mux_sel;
+    16                                               
+    17                                               
+    18                                               Serializer U_Serializer (
+    19                                               .CLK       (clk),
+    20                                               .RST       (reset),
+    21                                               .Busy      (Busy),
+    22                                               .P_DATA    (P_DATA),
+    23                                               .Data_Valid(DATA_VALID),
+    24                                               .Ser_En    (ser_en),
+    25                                               .Ser_Data  (ser_data),
+    26                                               .Ser_Done  (ser_done)
+    27                                               );
+    28                                               
+    29                                               FSM U_FSM (
+    30                                               .CLK       (clk),
+    31                                               .RST       (reset),
+    32                                               .Ser_En    (ser_en),
+    33                                               .Ser_Done  (ser_done),
+    34                                               .Data_Valid(DATA_VALID),
+    35                                               .PAR_EN    (PAR_EN),
+    36                                               .MUX_Sel   (mux_sel),
+    37                                               .Busy      (Busy)
+    38                                               );
+    39                                               
+    40                                               Parity_Calc U_Parity_Calc (
+    41                                               .CLK       (clk),
+    42                                               .RST       (reset),
+    43                                               .Data_Valid(DATA_VALID),
+    44                                               .Busy      (Busy),
+    45                                               .P_DATA    (P_DATA),
+    46                                               .PAR_TYP   (PAR_TYP),
+    47                                               .Par_Bit   (par_bit)
+    48                                               );
+    49                                               
+    50                                               MUX U_MUX (
+    51                                               .CLK      (clk),
+    52                                               .RST      (reset),
+    53                                               .MUX_Sel  (mux_sel),
+    54                                               .Par_Bit  (par_bit),
+    55                                               .Ser_Data (ser_data),
+    56                                               .Start_Bit(1'b0),
+    57                                               .Stop_Bit (1'b1),
+    58                                               .TX_OUT   (TX_OUT)
+    59                                               );
+    60                                               
+    61                                               initial begin
+    62              1                          1         $dumpfile("UART_TX.vcd");
+    63              1                          1         $dumpvars(0, UART_TX);
+    64                                               end
+    65                                               
+    66                                               endmodule
+
+Branch Coverage:
+    Enabled Coverage            Active      Hits    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    Branches                         0         0         0     100.0
+Condition Coverage:
+    Enabled Coverage            Active   Covered    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    FEC Condition Terms              0         0         0     100.0
+Expression Coverage:
+    Enabled Coverage            Active   Covered    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    FEC Expression Terms             0         0         0     100.0
+FSM Coverage:
+    Enabled Coverage            Active      Hits    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    FSMs                                                       100.0
+        States                       0         0         0     100.0
+        Transitions                  0         0         0     100.0
+Toggle Coverage:
+    Enabled Coverage            Active      Hits    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    Toggle Bins                     12        12         0     100.0
+
+================================Toggle Details================================
+
+Toggle Coverage for File Design_files/UART_TX.v --
+
+       Line                                   Node      1H->0L      0L->1H                          "Coverage"
+--------------------------------------------------------------------------------------------------------------
+         14                                 ser_en           1           1                              100.00 
+         14                               ser_done           1           1                              100.00 
+         14                               ser_data           1           1                              100.00 
+         14                                par_bit           1           1                              100.00 
+         15                             mux_sel[1]           1           1                              100.00 
+         15                             mux_sel[0]           1           1                              100.00 
+
+Total Node Count     =          6 
+Toggled Node Count   =          6 
+Untoggled Node Count =          0 
+
+Toggle Coverage      =      100.0% (12 of 12 bins)
+
+=================================================================================
+=== File: Design_files/UART_TX_SVA.sv
+=================================================================================
+Statement Coverage:
+    Enabled Coverage            Active      Hits    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    Stmts                            1         1         0     100.0
+
+================================Statement Details================================
+
+Statement Coverage for file Design_files/UART_TX_SVA.sv --
+
+    1                                                // verilog_lint: waive-start explicit-parameter-storage-type
+    2                                                // verilog_lint: waive-start unpacked-dimensions-range-ordering
+    3                                                // verilog_lint: waive-start line-length
+    4                                                // verilog_lint: waive-start enum-name-style
+    5                                                // verilog_lint: waive-start typedef-enums
+    6                                                
+    7                                                module UART_TX_SVA # (parameter Data_Width = 8) (
+    8                                                    input wire clk,
+    9                                                    input wire reset,
+    10                                                   input wire [Data_Width-1:0] P_DATA,
+    11                                                   input wire DATA_VALID,
+    12                                                   input wire PAR_EN,
+    13                                                   input wire PAR_TYP,
+    14                                                   input wire TX_OUT,
+    15                                                   input wire Busy
+    16                                               );
+    17                                               
+    18              1                      86966     always_comb begin
+    19                                                   if (!reset) begin
+    20                                                       Reset_a: assert final (TX_OUT && ~Busy) else $error("Reset Violation detected!");
+    21                                                       Reset_c: cover  final (TX_OUT && ~Busy);
+    22                                                   end
+    23                                               end
+    24                                               
+    25                                               property start_bit_p;
+    26                                                   @(posedge clk) disable iff (!reset)
+    27                                                   ((P_DATA != $past(P_DATA)) && DATA_VALID) |=> (~TX_OUT);
+    28                                               endproperty
+    29                                               
+    30                                               property Data_Bits_p;
+    31                                                   @(posedge clk) disable iff (!reset)
+    32                                                   ((P_DATA != $past(P_DATA)) && DATA_VALID)
+    33                                                   |=> ##1 (TX_OUT == P_DATA[0])
+    34                                                   ##1 (TX_OUT == P_DATA[1])
+    35                                                   ##1 (TX_OUT == P_DATA[2])
+    36                                                   ##1 (TX_OUT == P_DATA[3])
+    37                                                   ##1 (TX_OUT == P_DATA[4])
+    38                                                   ##1 (TX_OUT == P_DATA[5])
+    39                                                   ##1 (TX_OUT == P_DATA[6])
+    40                                                   ##1 (TX_OUT == P_DATA[7]);
+    41                                               endproperty
+    42                                               
+    43                                               property odd_parity_p;
+    44                                                   @(posedge clk) disable iff (!reset)
+    45                                                   ((P_DATA != $past(P_DATA)) && PAR_EN && PAR_TYP && DATA_VALID) |=> ##9 (TX_OUT == ^P_DATA);
+    46                                               endproperty
+    47                                               
+    48                                               property even_parity_p;
+    49                                                   @(posedge clk) disable iff (!reset)
+    50                                                   ((P_DATA != $past(P_DATA)) && PAR_EN && ~PAR_TYP && DATA_VALID) |=> ##9 (TX_OUT == ~^P_DATA);
+    51                                               endproperty
+    52                                               
+    53                                               property stop_bit_WithParity_p;
+    54                                                   @(posedge clk) disable iff (!reset)
+    55                                                   ((P_DATA != $past(P_DATA)) && PAR_EN && DATA_VALID) |=> ##10 (TX_OUT);
+    56                                               endproperty
+    57                                               
+    58                                               property stop_bit_WithoutParity_p;
+    59                                                   @(posedge clk) disable iff (!reset)
+    60                                                   ((P_DATA != $past(P_DATA)) && ~PAR_EN && DATA_VALID) |=> ##9 (TX_OUT);
+    61                                               endproperty
+    62                                               
+    63                                               property busy_WithParity_p;
+    64                                                   @(posedge clk) disable iff (!reset)
+    65                                                   ((P_DATA != $past(P_DATA)) && PAR_EN && DATA_VALID) |=> (Busy[*10]);
+    66                                               endproperty
+    67                                               
+    68                                               property busy_WithoutParity_p;
+    69                                                   @(posedge clk) disable iff (!reset)
+    70                                                   ((P_DATA != $past(P_DATA)) && ~PAR_EN && DATA_VALID) |=> (Busy[*9]);
+    71                                               endproperty
+    72                                               
+    73                                               property idle_when_not_busy_p;
+    74                                                 @(posedge clk) disable iff (!reset)
+    75                                                 (!Busy) |-> (TX_OUT);
+    76                                               endproperty
+    77                                               
+    78                                               
+    79                                               Odd_Parity_a: assert property (odd_parity_p) else $error("Odd Parity Violation detected!");
+    80                                               Odd_Parity_c: cover property (odd_parity_p);
+    81                                               
+    82                                               Even_Parity_a: assert property (even_parity_p) else $error("Even Parity Violation detected!");
+    83                                               Even_Parity_c: cover property (even_parity_p);
+    84                                               
+    85                                               Start_Bit_a: assert property (start_bit_p) else $error("Start Bit Violation detected!");
+    86                                               Start_Bit_c: cover property (start_bit_p);
+    87                                               
+    88                                               Stop_Bit_With_Parity_a: assert property (stop_bit_WithParity_p) else $error("Stop Bit With Parity Violation detected!");
+    89                                               Stop_Bit_With_Parity_c: cover property (stop_bit_WithParity_p);
+    90                                               
+    91                                               Stop_Bit_Without_Parity_a: assert property (stop_bit_WithoutParity_p) else $error("Stop Bit Without Parity Violation detected!");
+    92                                               Stop_Bit_Without_Parity_c: cover property (stop_bit_WithoutParity_p);
+    93                                               
+    94                                               Busy_WithParity_a: assert property (busy_WithParity_p) else $error("Busy With Parity Violation detected!");
+    95                                               Busy_WithParity_c: cover property (busy_WithParity_p);
+    96                                               
+    97                                               Busy_WithoutParity_a: assert property (busy_WithoutParity_p) else $error("Busy Without Parity Violation detected!");
+    98                                               Busy_WithoutParity_c: cover property (busy_WithoutParity_p);
+    99                                               
+    100                                              Data_Bits_a: assert property (Data_Bits_p) else $error("Data Bits Violation detected!");
+    101                                              Data_Bits_c: cover property (Data_Bits_p);
+    102                                              
+    103                                              Idle_When_Not_Busy_a: assert property (idle_when_not_busy_p) else $error("Idle When Not Busy Violation detected!");
+    104                                              Idle_When_Not_Busy_c: cover property (idle_when_not_busy_p);
+    105                                              
+    106                                              endmodule
+
+Branch Coverage:
+    Enabled Coverage            Active      Hits    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    Branches                         0         0         0     100.0
+Condition Coverage:
+    Enabled Coverage            Active   Covered    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    FEC Condition Terms              0         0         0     100.0
+Expression Coverage:
+    Enabled Coverage            Active   Covered    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    FEC Expression Terms             0         0         0     100.0
+FSM Coverage:
+    Enabled Coverage            Active      Hits    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    FSMs                                                       100.0
+        States                       0         0         0     100.0
+        Transitions                  0         0         0     100.0
+Toggle Coverage:
+    Enabled Coverage            Active      Hits    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    Toggle Bins                      0         0         0     100.0
+
+================================Toggle Details================================
+
+Toggle Coverage for File Design_files/UART_TX_SVA.sv --
+
+       Line                                   Node      1H->0L      0L->1H                          "Coverage"
+--------------------------------------------------------------------------------------------------------------
+
+Total Node Count     =          0 
+Toggled Node Count   =          0 
+Untoggled Node Count =          0 
+
+Toggle Coverage      =      100.0% (0 of 0 bins)
+
+=================================================================================
+=== File: Design_files/UART_TX_top.sv
+=================================================================================
+Statement Coverage:
+    Enabled Coverage            Active      Hits    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    Stmts                            0         0         0     100.0
+Branch Coverage:
+    Enabled Coverage            Active      Hits    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    Branches                         0         0         0     100.0
+Condition Coverage:
+    Enabled Coverage            Active   Covered    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    FEC Condition Terms              0         0         0     100.0
+Expression Coverage:
+    Enabled Coverage            Active   Covered    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    FEC Expression Terms             0         0         0     100.0
+FSM Coverage:
+    Enabled Coverage            Active      Hits    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    FSMs                                                       100.0
+        States                       0         0         0     100.0
+        Transitions                  0         0         0     100.0
+Toggle Coverage:
+    Enabled Coverage            Active      Hits    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    Toggle Bins                     30        30         0     100.0
+
+================================Toggle Details================================
+
+Toggle Coverage for File Design_files/UART_TX_top.sv --
+
+       Line                                   Node      1H->0L      0L->1H                          "Coverage"
+--------------------------------------------------------------------------------------------------------------
+          5                                    clk           1           1                              100.00 
+          6                                  reset           1           1                              100.00 
+          7                              P_DATA[7]           1           1                              100.00 
+          7                              P_DATA[6]           1           1                              100.00 
+          7                              P_DATA[5]           1           1                              100.00 
+          7                              P_DATA[4]           1           1                              100.00 
+          7                              P_DATA[3]           1           1                              100.00 
+          7                              P_DATA[2]           1           1                              100.00 
+          7                              P_DATA[1]           1           1                              100.00 
+          7                              P_DATA[0]           1           1                              100.00 
+          8                                 PAR_EN           1           1                              100.00 
+          9                                PAR_TYP           1           1                              100.00 
+         10                             DATA_VALID           1           1                              100.00 
+         11                                 TX_OUT           1           1                              100.00 
+         12                                   Busy           1           1                              100.00 
+
+Total Node Count     =         15 
+Toggled Node Count   =         15 
+Untoggled Node Count =          0 
+
+Toggle Coverage      =      100.0% (30 of 30 bins)
+
+
+Total Coverage By File (code coverage only, filtered view): 100.0%
+

@@ -1,0 +1,144 @@
+cvr_gp:
+  cover_percentage: 100.0
+  coverage: 50
+  size: 50
+  type: <class 'cocotb_coverage.coverage.CoverItem'>
+cvr_gp.Busy_Coverage:
+  at_least: 1
+  bins:_hits:
+    busy_0: 43714
+    busy_1: 134462
+  cover_percentage: 100.0
+  coverage: 2
+  size: 2
+  type: <class 'cocotb_coverage.coverage.CoverPoint'>
+  weight: 1
+cvr_gp.DATA_VALID_Coverage:
+  at_least: 1
+  bins:_hits:
+    data_invalid: 163700
+    data_valid: 14476
+  cover_percentage: 100.0
+  coverage: 2
+  size: 2
+  type: <class 'cocotb_coverage.coverage.CoverPoint'>
+  weight: 1
+cvr_gp.PAR_EN_Coverage:
+  at_least: 1
+  bins:_hits:
+    parity_disabled: 130870
+    parity_enabled: 47306
+  cover_percentage: 100.0
+  coverage: 2
+  size: 2
+  type: <class 'cocotb_coverage.coverage.CoverPoint'>
+  weight: 1
+cvr_gp.PAR_EN__PAR_TYP_CROSS:
+  at_least: 1
+  bins:_hits:
+    ('parity_disabled', 'even_parity'): 65700
+    ('parity_disabled', 'odd_parity'): 65170
+    ('parity_enabled', 'even_parity'): 23510
+    ('parity_enabled', 'odd_parity'): 23796
+  cover_percentage: 100.0
+  coverage: 4
+  size: 4
+  type: <class 'cocotb_coverage.coverage.CoverCross'>
+  weight: 1
+cvr_gp.PAR_TYP_Coverage:
+  at_least: 1
+  bins:_hits:
+    even_parity: 89210
+    odd_parity: 88966
+  cover_percentage: 100.0
+  coverage: 2
+  size: 2
+  type: <class 'cocotb_coverage.coverage.CoverPoint'>
+  weight: 1
+cvr_gp.P_DATA_Coverage:
+  at_least: 1
+  bins:_hits:
+    alt_pattern: 240
+    max_value: 112
+    min_value: 86
+    value_128: 786
+    value_160: 742
+    value_192: 644
+    value_224: 516
+    value_32: 841
+    value_64: 847
+    value_96: 789
+  cover_percentage: 100.0
+  coverage: 10
+  size: 10
+  type: <class 'cocotb_coverage.coverage.CoverPoint'>
+  weight: 1
+cvr_gp.P_DATA__DATA_VALID_CROSS:
+  at_least: 1
+  bins:_hits:
+    ('alt_pattern', 'data_invalid'): 222
+    ('alt_pattern', 'data_valid'): 18
+    ('max_value', 'data_invalid'): 104
+    ('max_value', 'data_valid'): 8
+    ('min_value', 'data_invalid'): 78
+    ('min_value', 'data_valid'): 8
+    ('value_128', 'data_invalid'): 724
+    ('value_128', 'data_valid'): 62
+    ('value_160', 'data_invalid'): 678
+    ('value_160', 'data_valid'): 64
+    ('value_192', 'data_invalid'): 595
+    ('value_192', 'data_valid'): 49
+    ('value_224', 'data_invalid'): 474
+    ('value_224', 'data_valid'): 42
+    ('value_32', 'data_invalid'): 771
+    ('value_32', 'data_valid'): 70
+    ('value_64', 'data_invalid'): 780
+    ('value_64', 'data_valid'): 67
+    ('value_96', 'data_invalid'): 721
+    ('value_96', 'data_valid'): 68
+  cover_percentage: 100.0
+  coverage: 20
+  size: 20
+  type: <class 'cocotb_coverage.coverage.CoverCross'>
+  weight: 1
+cvr_gp.Reset_Coverage:
+  at_least: 1
+  bins:_hits:
+    no_reset: 176674
+    reset: 1502
+  cover_percentage: 100.0
+  coverage: 2
+  size: 2
+  type: <class 'cocotb_coverage.coverage.CoverPoint'>
+  weight: 1
+cvr_gp.TX_OUT_Coverage:
+  at_least: 1
+  bins:_hits:
+    tx_out_0: 67587
+    tx_out_1: 110589
+  cover_percentage: 100.0
+  coverage: 2
+  size: 2
+  type: <class 'cocotb_coverage.coverage.CoverPoint'>
+  weight: 1
+cvr_gp.TX_OUT__Busy_CROSS:
+  at_least: 1
+  bins:_hits:
+    ('tx_out_0', 'busy_1'): 67587
+    ('tx_out_1', 'busy_0'): 43714
+    ('tx_out_1', 'busy_1'): 66875
+  cover_percentage: 100.0
+  coverage: 3
+  size: 3
+  type: <class 'cocotb_coverage.coverage.CoverCross'>
+  weight: 1
+cvr_gp.illegal_TX_OUT_Busy_Check:
+  at_least: 1
+  bins:_hits:
+    FAIL: 0
+    PASS: 178176
+  cover_percentage: 100.0
+  coverage: 1
+  size: 1
+  type: <class 'cocotb_coverage.coverage.CoverCheck'>
+  weight: 1
